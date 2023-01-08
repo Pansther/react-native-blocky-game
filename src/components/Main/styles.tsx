@@ -1,5 +1,6 @@
 import styled from 'styled-components/native'
-import { BlockButtonType, BlockyButtonProps } from './BlockyButton'
+
+import { BlockyButtonProps } from './BlockyButton'
 
 export const MainContainer = styled.View``
 
@@ -8,26 +9,23 @@ export const BlockyContainerView = styled.View`
   flex-direction: row;
 `
 
+export const BlockyButtonFrame = styled.Image`
+  z-index: 1;
+  width: 49px;
+  height: 60px;
+  display: flex;
+  position: absolute;
+  align-items: center;
+  justify-content: center;
+`
+
 export const BlockyButtonView = styled.TouchableOpacity.attrs({
   activeOpacity: 0.7,
 })<Pick<BlockyButtonProps, 'type'>>`
   width: 40px;
   height: 40px;
+  /* padding: 15px; */
   display: flex;
   align-items: center;
   justify-content: center;
-  ${({ type }) => getBlockyColor(type)}
 `
-
-const getBlockyColor = (type: BlockButtonType) => {
-  switch (type) {
-    case BlockButtonType.red:
-      return 'background-color: salmon;'
-    case BlockButtonType.green:
-      return 'background-color: limegreen;'
-    case BlockButtonType.blue:
-      return 'background-color: deepskyblue;'
-    default:
-      return 'background-color: black;'
-  }
-}

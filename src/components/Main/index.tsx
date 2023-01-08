@@ -11,20 +11,18 @@ import {
   type MainCurrentStateType,
 } from '../../contexts/main'
 
-
 const getChildren = ({
   currentState,
 }: {
   currentState: MainCurrentStateType
 }) => {
   switch (currentState) {
-    case 'start':
-      return <Menu />
     case 'playing':
       return <BlockyContainer />
+    case 'start':
     case 'ending':
     default:
-      return <BlockyContainer />
+      return <Menu />
   }
 }
 

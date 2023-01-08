@@ -3,6 +3,10 @@ import { createContext } from 'react'
 import { BlockyButtonProps } from '../components/Main/BlockyButton'
 
 export interface BlockyStateType {
+  move: number
+  count: number
+  score: number
+  maxMove: number
   datas: BlockyButtonProps[][]
 }
 
