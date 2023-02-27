@@ -3,6 +3,7 @@ import { createContext } from 'react'
 export type MainCurrentStateType = 'start' | 'playing' | 'ending'
 
 export interface MainStateType {
+  score: number
   currentState: 'start' | 'playing' | 'ending'
 }
 

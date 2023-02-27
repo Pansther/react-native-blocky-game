@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useRef } from 'react'
-import { Button, Text } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import { nanoid } from 'nanoid'
 import times from 'lodash/times'
 import random from 'lodash/random'
+import repeat from 'lodash/repeat'
 import constant from 'lodash/constant'
 import { useEffectOnce, useSetState } from 'react-use'
 
@@ -18,6 +19,15 @@ import { BlockyContainerContext, BlockyStateType } from '../../contexts/blocky'
 interface BlockyContainerProps {
   count?: number
   maxMove?: number
+}
+
+export const getRank = (score: number) => {
+  if (score <= 0) return 'F'
+  if (score <= 25) return 'C'
+  if (score <= 50) return 'B'
+  if (score <= 100) return 'A'
+  if (score <= 150) return 'S'
+  return repeat('S', Math.ceil((score - 150) / 50))
 }
 
 const generateBlocky = () => {
@@ -46,8 +56,8 @@ const BlockyContainer = ({ maxMove, count }: BlockyContainerProps) => {
     score: 0,
     datas: [],
     count: count ?? 6,
-    move: maxMove ?? 20,
-    maxMove: maxMove ?? 20,
+    move: maxMove ?? 30,
+    maxMove: maxMove ?? 30,
   })
 
   const pressCooldown = useRef(false)
@@ -178,7 +188,7 @@ const BlockyContainer = ({ maxMove, count }: BlockyContainerProps) => {
       })
     })
 
-    return amount * 1
+    return amount + Math.ceil(parseInt(`${amount / 1.5}`))
     // return amount * type
   }
 
@@ -205,6 +215,12 @@ const BlockyContainer = ({ maxMove, count }: BlockyContainerProps) => {
     setNewDatas(score)
   }
 
+  const onEnding = () => {
+    setTimeout(() => {
+      setMainState({ currentState: 'ending', score: state.score })
+    }, 1000)
+  }
+
   useEffectOnce(() => {
     resetRoutes(state.count)
     setState({
@@ -214,9 +230,7 @@ const BlockyContainer = ({ maxMove, count }: BlockyContainerProps) => {
 
   useEffect(() => {
     if (state.move <= 0) {
-      setTimeout(() => {
-        setMainState({ currentState: 'ending' })
-      }, 1000)
+      onEnding()
     }
   }, [state.move])
 
@@ -224,29 +238,44 @@ const BlockyContainer = ({ maxMove, count }: BlockyContainerProps) => {
     <BlockyContainerContext.Provider
       value={{ blockyState: state, setBlockyState: setState }}
     >
-      <Text>score: {state.score}</Text>
-      <Text>move: {state.move}</Text>
-      {state?.datas?.map((rows, row) => (
-        <BlockyContainerView key={row}>
-          {rows.map((blocky, col) => (
-            <BlockyButton
-              {...blocky}
-              key={blocky.id}
-              onPress={() => onPressBlockyButton({ row, col, blocky })}
-            />
-          ))}
-        </BlockyContainerView>
-      ))}
-      <Button
-        title="Random"
-        onPress={() =>
-          setState({
-            datas: generateBlockyList(state.count),
-          })
-        }
-      />
+      <Text style={styles.rank}>Rank: {getRank(state.score)}</Text>
+      <View style={styles.container}>
+        {state?.datas?.map((rows, row) => (
+          <BlockyContainerView key={row}>
+            {rows.map((blocky, col) => (
+              <BlockyButton
+                {...blocky}
+                key={blocky.id}
+                onPress={() => onPressBlockyButton({ row, col, blocky })}
+              />
+            ))}
+          </BlockyContainerView>
+        ))}
+      </View>
+      <View style={styles.scoreContainer}>
+        <Text style={styles.score}>score: {state.score}</Text>
+        <Text style={styles.score}>move: {state.move}</Text>
+      </View>
     </BlockyContainerContext.Provider>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    paddingVertical: 20,
+  },
+  scoreContainer: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  score: {
+    fontSize: 20,
+  },
+  rank: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+})
 
 export default BlockyContainer
